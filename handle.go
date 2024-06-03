@@ -143,6 +143,7 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 			Timestamp: t.UTC().UnixNano(),
 		}
 		// send stats to nomad
+		h.logger.Trace("Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
 		statsChannel <- &usage
 	}
 }
@@ -205,6 +206,7 @@ func (h *TaskHandle) runContainerMonitor() {
 		}
 
 		containerStats, statsErr := h.driver.podman.ContainerStats(h.driver.ctx, h.containerID)
+		h.logger.Trace("Container stats", "container", h.containerID, "stats", containerStats, "error", statsErr)
 		if statsErr != nil {
 			gone := false
 			if errors.Is(statsErr, api.ContainerNotFound) {
