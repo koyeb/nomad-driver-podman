@@ -102,7 +102,7 @@ func (h *TaskHandle) runExitWatcher(ctx context.Context, exitChannel chan *drive
 
 func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *drivers.TaskResourceUsage, interval time.Duration) {
 	timer := time.NewTimer(0)
-	h.logger.Debug("Starting statsEmitter", "container", h.containerID)
+	h.logger.Debug("Starting statsEmitter !", "container", h.containerID)
 	h.collectionInterval = interval
 	for {
 		select {
@@ -143,7 +143,7 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 			Timestamp: t.UTC().UnixNano(),
 		}
 		// send stats to nomad
-		h.logger.Trace("Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
+		h.logger.Debug("Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
 		statsChannel <- &usage
 	}
 }
@@ -194,7 +194,7 @@ func (h *TaskHandle) runLogStreamer(ctx context.Context) {
 func (h *TaskHandle) runContainerMonitor() {
 
 	timer := time.NewTimer(0)
-	h.logger.Debug("Monitoring container", "container", h.containerID)
+	h.logger.Debug("Monitoring container !", "container", h.containerID)
 
 	for {
 		select {
@@ -206,7 +206,7 @@ func (h *TaskHandle) runContainerMonitor() {
 		}
 
 		containerStats, statsErr := h.driver.podman.ContainerStats(h.driver.ctx, h.containerID)
-		h.logger.Trace("Container stats", "container", h.containerID, "stats", containerStats, "error", statsErr)
+		h.logger.Debug("Container stats", "container", h.containerID, "stats", containerStats, "error", statsErr)
 		if statsErr != nil {
 			gone := false
 			if errors.Is(statsErr, api.ContainerNotFound) {
