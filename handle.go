@@ -154,9 +154,10 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 		}
 		h.logger.Debug("XXX got usage")
 		// send stats to nomad
+		fmt.Println("XXX Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
 		h.logger.Debug("XXX Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
 		statsChannel <- &usage
-		h.logger.Debug("XXX sent", "stats", usage)
+		h.logger.Debug("XXX sent")
 		// send stats to nomad
 	}
 }
