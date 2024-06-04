@@ -105,19 +105,25 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 	h.logger.Debug("Starting statsEmitter !", "container", h.containerID)
 	h.collectionInterval = interval
 	for {
+		h.logger.Debug("XXX select")
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("Stopping statsEmitter", "container", h.containerID)
 			return
 		case <-timer.C:
+			h.logger.Debug("XXX timer")
 			timer.Reset(interval)
 		}
+		/// debug every step
 
+		h.logger.Debug("XXX getting lock")
 		h.stateLock.Lock()
 		t := time.Now()
 
 		// FIXME implement cpu stats correctly
+		h.logger.Debug("XXX getting cpu %")
 		totalPercent := h.totalCPUStats.Percent(float64(h.containerStats.CPUStats.CPUUsage.TotalUsage))
+		h.logger.Debug("XXX getting cpu stats")
 		cs := &drivers.CpuStats{
 			SystemMode: h.systemCPUStats.Percent(float64(h.containerStats.CPUStats.CPUUsage.UsageInKernelmode)),
 			UserMode:   h.userCPUStats.Percent(float64(h.containerStats.CPUStats.CPUUsage.UsageInUsermode)),
@@ -126,12 +132,14 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 			Measured:   measuredCPUStats,
 		}
 
+		h.logger.Debug("XXX getting memory stats")
 		ms := &drivers.MemoryStats{
 			MaxUsage: h.containerStats.MemoryStats.MaxUsage,
 			Usage:    h.containerStats.MemoryStats.Usage,
 			RSS:      h.containerStats.MemoryStats.Usage,
 			Measured: measuredMemStats,
 		}
+		h.logger.Debug("XXX unlock")
 		h.stateLock.Unlock()
 
 		// update uasge
