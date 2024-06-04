@@ -141,8 +141,10 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 		}
 		h.logger.Debug("XXX unlock")
 		h.stateLock.Unlock()
+		h.logger.Debug("XXX unlocked")
 
 		// update uasge
+		h.logger.Debug("XXX unlocked")
 		usage := drivers.TaskResourceUsage{
 			ResourceUsage: &drivers.ResourceUsage{
 				CpuStats:    cs,
@@ -150,9 +152,12 @@ func (h *TaskHandle) runStatsEmitter(ctx context.Context, statsChannel chan *dri
 			},
 			Timestamp: t.UTC().UnixNano(),
 		}
+		h.logger.Debug("XXX got usage")
 		// send stats to nomad
 		h.logger.Debug("Sending stats to nomad", "container", h.containerID, "stats cpu total tics", usage.ResourceUsage.CpuStats.TotalTicks, "stats cpu percent", usage.ResourceUsage.CpuStats.Percent)
 		statsChannel <- &usage
+		h.logger.Debug("XXX sent")
+		// send stats to nomad
 	}
 }
 func (h *TaskHandle) runLogStreamer(ctx context.Context) {
